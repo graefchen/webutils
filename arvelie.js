@@ -1,5 +1,11 @@
-/* Arvelie - an alpabetic date format ****************
+/* arvelie.js ****************************************
+ * An library for the Arvelie alpabetic              *
+ * date format.                                      *
  * (c)2025 graefchen                                 *
+ * The date format was created by Devine Lu Linvega  *
+ * Documentation for the date format can be found    *
+ * under the following link:                         *
+ * https://wiki.xxiivv.com/site/arvelie.html         *
  *****************************************************
  * A library that translates dates into and from the *
  * "Arvelie" calender format.                        *
@@ -12,9 +18,6 @@
  * Furthermore it shall be noted that the Arvelie    *
  * date format is ONLY A DATE FORMAT and does not    *
  * handle hours, seconds and milliseconds.           *
- *                                                   *
- * Original Reference used:                          *
- * https://wiki.xxiivv.com/site/arvelie.html         *
  *****************************************************
  * v1.0 - First release (2025-06-16 / 2025K14)       *
  *        Mainly uses the Date JavaScript Object to  *
