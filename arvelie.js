@@ -55,36 +55,70 @@ const isLeapYear = (year) => {
   return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
 }
 
-/* TODO: Use the offset to get an correct offset */
-const parseArvelie = (date, offset) => {}
+/* Takes in Date,ISO(YYYY-MM-DD),YY(M|+)DD, nothing */
+const parseArvelie = (date, offset) => {
+  if (date === undefined) return parseArvelie(new Date())
+  if (date instanceof Date) {
+    const dcnl = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+    const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+    const dc = (isLeapYear(date.getFullYear()) ? dcly : dcnl)
+    const doty = dc[date.getMonth()] + date.getDate() - 1
+    return {year: date.getFullYear(), doty: doty, offset: 0 }
+  }
+  if (/^[0-9]{4}?-[0-9]{2}?-[0-9]{2}?$/.test(date)) {
+    return parseArvelie(new Date(date), offset)
+  }
+  if (/^[0-9]{2}?([A-Z]|\+){1}?[0-9]{2}?$/.test(date)) {
+    const m = date.match(/([0-9]{2})([A-Z]|\+){1}?([0-9]{2}?)/)
+    const doty = (m[2] === "+" ? 364 : (m[2].charCodeAt(0) - 65) * 14) + Number(m[3])
+    return { year: Number(m[1]), doty: doty, offset: offset }
+  }
+  return { year: 0, doty: 0, offset: 0 }
+}
 
 class Arvelie {
   /* Arvelie num format of calender */
-  constructor(date, offset) {}
-  clone() {}
-  /* only accepts values greater than 0 */
-  setYear(year) {}
-  /* only accepts values between 0 and 25 */
-  setMonth(month) {}
-  /* only acccepts values between 0 and 13 */
-  setDay(day) {}
-  setDayOfYear(doty) {}
-  getYear() {}
-  getMonth() {}
-  getDay() {}
-  getDayOfYear() {}
-  toDate() {}
+  year
+  doty
+  offset
+  constructor(date, offset = 2000) {
+    const data = parseArvelie(date, offset)
+    this.year = data.year
+    this.doty = data.doty
+    this.offset = data.offset
+  }
+  getYear() { return this.year }
+  getMonth() {
+    const mt = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","+"]
+    return mt[Math.floor(this.doty / 14)]
+  }
+  getDay() { return this.doty % 14}
+  getDayOfYear() { return this.doty }
+  isLeapYear() { return isLeapYear(this.year + this.offset) }
+  toDate() { return new Date(this.toDateString())}
   /* Similar to the equivalent method of the JavaScript Date Object.
    * Uses a modified form of the ISO 8601 standard.
    * Output: YYYY-MM-DD
    */
-  toDateString() {}
+  toDateString() {
+    let   i = 0;
+    const dcnl = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+    const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+    const dc   = this.isLeapYear() ? dcly : dcnl;
+    while (this.doty > (dc[i])) i++
+    const year  = String(this.year + this.offset).padStart(4, "0")
+    const month = String(i).padStart(2,"0")
+    const day   = String(this.doty - dc[i - 1] + 1).padStart(2,"0")
+    return `${year}-${month}-${day}`
+  }
   /* Format: YY(M|+)DD */
-  toString() {}
+  toString() {
+    const yy = String(this.year % 100).padStart(2, "0")
+    const m  = this.getMonth()
+    const dd = String(this.getDay()).padStart(2, "0")
+    return `${yy}${m}${dd}`
+  }
 }
-
-const proto = Arvelie.prototype
-arvelie.prototype = proto
 
 export default arvelie
 
