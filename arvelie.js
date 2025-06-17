@@ -1,31 +1,17 @@
 /* arvelie.js ****************************************
- * An smll library for the Arvelie alpabetic         *
+ * An small library for the Arvelie alpabetic        *
  * date format.                                      *
  * (c)2025 graefchen (https://github.com/graefchen)  *
  * The date format was created by Devine Lu Linvega  *
  * Documentation for the date format can be found    *
  * under the following link:                         *
  * https://wiki.xxiivv.com/site/arvelie.html         *
- * Other ressources / librarys are commented         *
+ *                                                   *
+ * Other ressources / librarys can be found          *
  * on the bottom of this file.                       *
  *****************************************************
  * A library that translates dates into and from the *
  * "Arvelie" calender format.                        *
- * It shall be noted that this library does not use  *
- * the JavaScript Date Object or the Temporal API    *
- * and implements its own Data Structure to handle   *
- * dates, BUT this library has the ability to        *
- * transform the current Arvelie date to the equal   *
- * JavaScript Date Object.                           *
- * Furthermore it shall be noted that the Arvelie    *
- * date format is ONLY A DATE FORMAT and does not    *
- * handle hours, seconds and milliseconds.           *
- *                                                   *
- * This library also "allowes" dates that are iffy   *
- * and should NOT work like "14+01" that can not be  *
- * a leap year by itself but does have exist in the  *
- * context of having an offset of 6 years, making it *
- * technically "20+01" which is leap year.           *
  *****************************************************
  * v1.0 - First release ( / )                        *
  *****************************************************
@@ -70,119 +56,31 @@ const isLeapYear = (year) => {
 }
 
 /* TODO: Use the offset to get an correct offset */
-const parseArvelie = (date, offset) => {
-  if (date === undefined) return parseArvelie(new Date(), offset)
-  if (date instanceof Date) {
-    /* dc = day count (days after months) */
-    const dcnl = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-    const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
-    const dc   = (isLeapYear(date.getFullYear()) ? dcly : dcnl);
-    const doty = dc[date.getMonth()] + date.getDay()
-    return { year: date.getFullYear() + offset, doty: doty }
-  }
-  if (/^[0-9]{0,4}-?[0-9]{1,2}-?[0-9]{1,2}$/.test(date)) {
-    /* TODO: Rework this a little bit to not just call parseArvelie again */
-    return parseArvelie(new Date(date), offset);
-  }
-  if (/[0-9]{2}([A-Z]|\+){1}[0-9]{2}/.test(date)) {
-    const m = date.match(/([0-9]{2})([A-Z]|\+){1}([0-9]{2})/)
-    const doty = (m[2] === "+" ? 365 : (m[2].charCodeAt(0) - 65) * 14) + Number(m[3])
-    return { year: Number(m[1]) + offset, doty: doty }
-  }
-
-  return { year: 0, doty: 0 }
-}
+const parseArvelie = (date, offset) => {}
 
 class Arvelie {
   /* Arvelie num format of calender */
-  #date = { year: 0, doty: 0 }
-
-  constructor(date) {
-    this.#parse(date)
-  }
-
-  #parse(date) {
-    this.#date = parseArvelie(date)
-  }
-
-  clone() {
-    return new Arvelie(this.toString())
-  }
-
+  constructor(date, offset) {}
+  clone() {}
   /* only accepts values greater than 0 */
-  setYear(year) {
-    this.#date.year = (0 <= year) ? year : this.#date.year
-    return this
-  }
-
+  setYear(year) {}
   /* only accepts values between 0 and 25 */
-  setMonth(month) {
-    const nm = (month >= 0 && month <= 25) ? month : this.getMonth()
-    this.#date.doty = this.#date.doty - (this.getMonth() - nm)
-    return this
-  }
-
+  setMonth(month) {}
   /* only acccepts values between 0 and 13 */
-  setDay(day) {
-    const nd = (day >= 0 && day <= 13) ? day : this.#date.day
-    this.#date.day = nd
-    this.#date.doty = this.#date.doty - (this.#date.day - nd)
-    return this
-  }
-  
-  setDayOfYear(doty) {
-    let ndoty = (doty >= 0 && doty <= 366) ? doty : this.#date.doty
-    if (!this.isLeapYear() && doty == 366) ndoty -= 1
-    this.#date.doty = this.#date.doty - (this.#date.doty - ndoty)
-    return this
-  }
-
-  getYear() { return this.#date.year }
-
-  getMonth() {
-    const dcnl = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
-    const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366];
-    const dc   = this.isLeapYear() ? dcly : dcnl;
-    let n = 0;
-    while (dc[n] < this.#date.doty) n++
-    return (n - 1)
-  }
-
-  getDay() { return this.#date.day }
-
-  getDayOfYear() { return this.#date.doty }
-
-  isLeapYear() { return isLeapYear(this.#date.year) }
-
-  toDate() { return new Date(String(this.toDateString())) }
-
+  setDay(day) {}
+  setDayOfYear(doty) {}
+  getYear() {}
+  getMonth() {}
+  getDay() {}
+  getDayOfYear() {}
+  toDate() {}
   /* Similar to the equivalent method of the JavaScript Date Object.
    * Uses a modified form of the ISO 8601 standard.
    * Output: YYYY-MM-DD
-   * TODO: Fix bug of DD being negative.
    */
-  toDateString() {
-    let   i = 0;
-    const dcnl = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-    const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
-    const dc   = this.isLeapYear() ? dcly : dcnl;
-    while (this.#date.doty >= (dc[i])) i++
-    const year  = String(this.#date.year).padStart(4, "0")
-    const month = String(i).padStart(2, "0")
-    const day   = String(this.#date.doty - dc[i - 1]).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
-
+  toDateString() {}
   /* Format: YY(M|+)DD */
-  toString() {
-    /* year day + leap day */
-    if (this.#date.doty == 365) return `${this.#date.year}+00`
-    if (this.#date.doty == 366) return `${this.#date.year}+01`
-    const year  = String(this.getYear()).padStart(2, "0")
-    const month = String.fromCharCode(this.getMonth() + 65)
-    const day   = String(this.getDay() + 1).padStart(2, "0")
-    return `${year}${month}${day}`
-  }
+  toString() {}
 }
 
 const proto = Arvelie.prototype
