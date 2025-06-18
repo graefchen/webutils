@@ -13,7 +13,7 @@
  * A library that translates dates into and from the *
  * "Arvelie" calender format.                        *
  *****************************************************
- * v1.0 - First release ( / )                        *
+ * v1.0 - First release ( TBD )                      *
  *****************************************************
  * Copyright (c) 2025 graefchen                      *
  * Permission is hereby granted, free of charge, to  *
