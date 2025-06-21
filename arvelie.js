@@ -7,7 +7,7 @@
  * under the following link:                         *
  * https://wiki.xxiivv.com/site/arvelie.html         *
  *                                                   *
- * Other ressources / librarys can be found          *
+ * Other ressources / libraries can be found         *
  * on the bottom of this file.                       *
  *****************************************************
  * v1.0.0 - First release (2025-06-21/25M04)         *
