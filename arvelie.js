@@ -1,6 +1,6 @@
 /* arvelie.js ****************************************
- * An small library for the Arvelie alpabetic        *
- * date format.                                      *
+ * An small library that translates dates into and   *
+ * from the "Arvelie" date format.                   *
  * (c)2025 graefchen (https://github.com/graefchen)  *
  * The date format was created by Devine Lu Linvega  *
  * Documentation for the date format can be found    *
@@ -10,10 +10,7 @@
  * Other ressources / librarys can be found          *
  * on the bottom of this file.                       *
  *****************************************************
- * A library that translates dates into and from the *
- * "Arvelie" calender format.                        *
- *****************************************************
- * v1.0 - First release ( TBD )                      *
+ * v1.0.0 - First release (2025-06-21/25M04)         *
  *****************************************************
  * Copyright (c) 2025 graefchen                      *
  * Permission is hereby granted, free of charge, to  *
@@ -44,6 +41,43 @@
  * IN THE SOFTWARE.                                  *
  *****************************************************
  * Usage:                                            *
+ * To create a new date in Arvelie just use the      *
+ * "arvelie" function without giving it any          *
+ * arguments, like this:                             *
+ * > const today = arvelie()                         *
+ * The arvelie function also allowes to use other    *
+ * representation like:                              *
+ * The Arvelie Date Format in YYMDD where:           *
+ *  - YY = between 00 and 99                         *
+ *  - M  = between A and Z                           *
+ *         and + for Year and Leap Day               *
+ *  - D  = between 00 and 13                         *
+ * The ISO 8601 Format in YYYYMMDD where:            *
+ * - YYYY = between 0000 and 9999                    *
+ * - MM   = between 01 and 12                        *
+ * - DD   = between 01 and 31                        *
+ * A Date Object                                     *
+ *                                                   *
+ * Alternatively to calling the "arvelie" function   *
+ * it is possible to directly create a new Arvelie   *
+ * Object with "new Arvelie()"                       *
+ *                                                   *
+ * To get the Year, Month, Day and Days of the Year  *
+ * of the Arvelie format the functions:              *
+ * - getYear()                                       *
+ * - getMonth()                                      *
+ * - getDay()                                        *
+ * - getDaysOfYear()                                 *
+ *                                                   *
+ * To get a Date Object from a Arvelie use the       *
+ * "toDate()" function, that return a Date Object    *
+ * To get an representation of the ISO 8601          *
+ * standard, use the "toDateString()" function.      *
+ * To get the correct Arvelie Date format use the    *
+ * "toString()" function.                            *
+ *                                                   *
+ * IMPORTAMT: Currently arvelie.js does not validate *
+ * given dates.                                      *
  ****************************************************/
 
 const arvelie = function (date, offset = 2000) {
@@ -61,15 +95,16 @@ const parseArvelie = (date, offset) => {
   if (date instanceof Date) {
     const dcnl = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
     const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
-    const dc = (isLeapYear(date.getFullYear()) ? dcly : dcnl)
+    const dc   = (isLeapYear(date.getFullYear()) ? dcly : dcnl)
     const doty = dc[date.getMonth()] + date.getDate() - 1
     return {year: date.getFullYear(), doty: doty, offset: 0 }
   }
   if (/^[0-9]{4}?-[0-9]{2}?-[0-9]{2}?$/.test(date)) {
+    /* TODO: Rewrite it to diretly translate to Arvelie instead of creating and using a Date Object. */
     return parseArvelie(new Date(date), offset)
   }
   if (/^[0-9]{2}?([A-Z]|\+){1}?[0-9]{2}?$/.test(date)) {
-    const m = date.match(/([0-9]{2})([A-Z]|\+){1}?([0-9]{2}?)/)
+    const m    = date.match(/([0-9]{2})([A-Z]|\+){1}?([0-9]{2}?)/)
     const doty = (m[2] === "+" ? 364 : (m[2].charCodeAt(0) - 65) * 14) + Number(m[3])
     return { year: Number(m[1]), doty: doty, offset: offset }
   }
@@ -82,9 +117,9 @@ class Arvelie {
   doty
   offset
   constructor(date, offset = 2000) {
-    const data = parseArvelie(date, offset)
-    this.year = data.year
-    this.doty = data.doty
+    const data  = parseArvelie(date, offset)
+    this.year   = data.year
+    this.doty   = data.doty
     this.offset = data.offset
   }
   getYear() { return this.year }
@@ -94,24 +129,25 @@ class Arvelie {
   }
   getDay() { return this.doty % 14}
   getDayOfYear() { return this.doty }
-  isLeapYear() { return isLeapYear(this.year + this.offset) }
+  #isLeapYear() { return isLeapYear(this.year + this.offset) }
+  /* Return a Date-Object */
   toDate() { return new Date(this.toDateString())}
   /* Similar to the equivalent method of the JavaScript Date Object.
    * Uses a modified form of the ISO 8601 standard.
    * Output: YYYY-MM-DD
    */
   toDateString() {
-    let   i = 0;
+    let   i    = 0;
     const dcnl = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
     const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
-    const dc   = this.isLeapYear() ? dcly : dcnl;
+    const dc   = this.#isLeapYear() ? dcly : dcnl;
     while (this.doty > (dc[i])) i++
     const year  = String(this.year + this.offset).padStart(4, "0")
     const month = String(i).padStart(2,"0")
     const day   = String(this.doty - dc[i - 1] + 1).padStart(2,"0")
     return `${year}-${month}-${day}`
   }
-  /* Format: YY(M|+)DD */
+  /* Output(the complete Arvelie Date): YYMDD */
   toString() {
     const yy = String(this.year % 100).padStart(2, "0")
     const m  = this.getMonth()
@@ -120,7 +156,7 @@ class Arvelie {
   }
 }
 
-export default arvelie
+export default { arvelie, Arvelie }
 
 /**
  * At the end if the file because I liked the 53 wide header to much.
