@@ -2,7 +2,7 @@
  * An small library that translates dates into and   *
  * from the "Arvelie" date format.                   *
  * (c)2025 graefchen (https://github.com/graefchen)  *
- * The date format was created by Devine Lu Linvega  *
+ * The date format was created by Devine Lu Linvega. *
  * Documentation for the date format can be found    *
  * under the following link:                         *
  * https://wiki.xxiivv.com/site/arvelie.html         *
@@ -97,7 +97,7 @@ const parseArvelie = (date, offset) => {
     const dcly = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
     const dc   = (isLeapYear(date.getFullYear()) ? dcly : dcnl)
     const doty = dc[date.getMonth()] + date.getDate() - 1
-    return {year: date.getFullYear(), doty: doty, offset: 0 }
+    return { year: date.getFullYear(), doty: doty, offset: 0 }
   }
   if (/^[0-9]{4}?-[0-9]{2}?-[0-9]{2}?$/.test(date)) {
     /* TODO: Rewrite it to diretly translate to Arvelie instead of creating and using a Date Object. */
