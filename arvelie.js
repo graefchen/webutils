@@ -76,7 +76,7 @@
  * To get the correct Arvelie Date format use the    *
  * "toString()" function.                            *
  *                                                   *
- * IMPORTAMT: Currently arvelie.js does not validate *
+ * IMPORTANT: Currently arvelie.js does not validate *
  * given dates.                                      *
  ****************************************************/
 
@@ -100,7 +100,6 @@ const parseArvelie = (date, offset) => {
     return { year: date.getFullYear(), doty: doty, offset: 0 }
   }
   if (/^[0-9]{4}?-[0-9]{2}?-[0-9]{2}?$/.test(date)) {
-    /* TODO: Rewrite it to diretly translate to Arvelie instead of creating and using a Date Object. */
     return parseArvelie(new Date(date), offset)
   }
   if (/^[0-9]{2}?([A-Z]|\+){1}?[0-9]{2}?$/.test(date)) {
